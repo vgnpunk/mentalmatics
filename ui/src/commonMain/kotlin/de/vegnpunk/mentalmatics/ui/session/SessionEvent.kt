@@ -1,11 +1,11 @@
 package de.vegnpunk.mentalmatics.ui.session
 
 sealed interface SessionEvent {
-    data class AnswerChanged(
-        val answer: String,
+    data class DigitPressed(
+        val digit: Int,
     ) : SessionEvent
 
-    data object SubmitAnswer : SessionEvent
+    data object BackspacePressed : SessionEvent
 
-    data object NextTask : SessionEvent
+    data object ConfirmPressed : SessionEvent
 }
