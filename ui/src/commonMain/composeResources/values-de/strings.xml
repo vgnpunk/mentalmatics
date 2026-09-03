@@ -10,4 +10,9 @@
     <string name="difficulty_easy">Leicht</string>
     <string name="difficulty_medium">Mittel</string>
     <string name="difficulty_hard">Schwer</string>
+    <string name="session_answer_label">Deine Antwort</string>
+    <string name="session_feedback_correct">Richtig!</string>
+    <string name="session_feedback_incorrect">Falsch. Die richtige Antwort ist %1$d.</string>
+    <string name="action_check">Prüfen</string>
+    <string name="action_next_task">Nächste Aufgabe</string>
 </resources>

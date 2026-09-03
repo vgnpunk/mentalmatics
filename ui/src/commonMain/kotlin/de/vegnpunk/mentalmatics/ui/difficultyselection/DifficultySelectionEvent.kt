@@ -6,4 +6,6 @@ sealed interface DifficultySelectionEvent {
     data class SelectDifficulty(
         val difficulty: Difficulty,
     ) : DifficultySelectionEvent
+
+    data object Continue : DifficultySelectionEvent
 }

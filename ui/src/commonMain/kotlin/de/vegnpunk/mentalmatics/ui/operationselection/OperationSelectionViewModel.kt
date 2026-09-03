@@ -42,7 +42,7 @@ class OperationSelectionViewModel : ViewModel() {
 
     private fun navigateToDifficultySelection() {
         viewModelScope.launch {
-            _navigationEffect.send(Route.DifficultySelection)
+            _navigationEffect.send(Route.DifficultySelection(selectedOperations = _uiState.value.selectedOperations))
         }
     }
 }

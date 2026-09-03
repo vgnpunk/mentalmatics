@@ -9,24 +9,39 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import de.vegnpunk.mentalmatics.core.arithmetic.ArithmeticOperation
 import de.vegnpunk.mentalmatics.core.generation.Difficulty
+import de.vegnpunk.mentalmatics.ui.navigation.Route
 import mentalmatics.ui.generated.resources.Res
+import mentalmatics.ui.generated.resources.action_continue
 import mentalmatics.ui.generated.resources.difficulty_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun DifficultySelectionScreen(viewModel: DifficultySelectionViewModel = koinViewModel()) {
+fun DifficultySelectionScreen(
+    selectedOperations: Set<ArithmeticOperation>,
+    onNavigate: (Route) -> Unit,
+    viewModel: DifficultySelectionViewModel = koinViewModel { parametersOf(selectedOperations) },
+) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(viewModel) {
+        viewModel.navigationEffect.collect { route -> onNavigate(route) }
+    }
+
     DifficultySelectionContent(uiState = uiState, onEvent = viewModel::onEvent)
 }
 
@@ -54,6 +69,9 @@ private fun DifficultySelectionContent(
                 selected = difficulty == uiState.selectedDifficulty,
                 onSelect = { onEvent(DifficultySelectionEvent.SelectDifficulty(difficulty)) },
             )
+        }
+        Button(onClick = { onEvent(DifficultySelectionEvent.Continue) }) {
+            Text(stringResource(Res.string.action_continue))
         }
     }
 }

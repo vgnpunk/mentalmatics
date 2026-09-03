@@ -1,5 +1,7 @@
 package de.vegnpunk.mentalmatics.ui.navigation
 
+import de.vegnpunk.mentalmatics.core.arithmetic.ArithmeticOperation
+import de.vegnpunk.mentalmatics.core.generation.Difficulty
 import kotlinx.serialization.Serializable
 
 /**
@@ -15,5 +17,13 @@ sealed interface Route {
     data object Home : Route
 
     @Serializable
-    data object DifficultySelection : Route
+    data class DifficultySelection(
+        val selectedOperations: Set<ArithmeticOperation>,
+    ) : Route
+
+    @Serializable
+    data class Session(
+        val selectedOperations: Set<ArithmeticOperation>,
+        val selectedDifficulty: Difficulty,
+    ) : Route
 }
