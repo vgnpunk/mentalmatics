@@ -8,10 +8,14 @@
 
 ## Current Project Status
 
-- Phase: **Ticket derivation complete** — vision, architecture
-  foundations, and the ADR catalog are in place, initial tickets have
-  been created as GitHub issues.
-- No code exists yet, greenfield project.
+- Phase: **MVP implementation started**. Ticket #1 (Gradle module
+  structure per ADR-009) is done: `:core`, `:data`, `:ui`, `:content`
+  Gradle modules exist alongside `:androidApp`/`:iosApp`, replacing the
+  wizard-generated `:shared` module. `:ui` holds a minimal placeholder
+  `App()` (no product UI yet) and produces the iOS framework
+  (`Ui.framework`, embedded via `:ui:embedAndSignAppleFrameworkForXcode`).
+  `:core`/`:data`/`:content` are empty skeletons, populated by later
+  tickets.
 - Decided ADRs: ADR-001 through ADR-015 (see `docs/adr/`) — all ADRs
   are decided.
 
@@ -76,10 +80,12 @@ a change to the vision.
 
 ## Current Focus
 
-Currently: MVP tickets (milestone "MVP") have been created as GitHub
-issues in `vgnpunk/mentalmatics` and are ready for assignment (see
-`docs/git-strategy.md` — tickets are assigned manually, the AI does
-not pick tickets on its own).
+MVP tickets (milestone "MVP") exist as GitHub issues in
+`vgnpunk/mentalmatics`. Ticket #1 (module structure) is implemented on
+`feature/1-gradle-module-structure`, pending PR review. Remaining MVP
+tickets (#2–#20) are ready for assignment (see `docs/git-strategy.md`
+— tickets are assigned manually, the AI does not pick tickets on its
+own beyond what's been explicitly assigned).
 
 ## Important References
 
