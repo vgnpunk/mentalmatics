@@ -16,6 +16,15 @@
   (`Ui.framework`, embedded via `:ui:embedAndSignAppleFrameworkForXcode`).
   `:core`/`:data`/`:content` are empty skeletons, populated by later
   tickets.
+- Ticket #2 (CI pipeline per ADR-003) is done: `.github/workflows/ci.yml`
+  runs on every PR/push to `main` — `ktlintCheck` (ubuntu), Android
+  build+test (ubuntu), iOS simulator tests + Xcode build (macos).
+  ktlint (org.jlleitschuh.gradle.ktlint) is wired into every module's
+  own `build.gradle.kts` (not a root `subprojects {}` block — the
+  version-catalog `libs` accessor isn't reliably available there); a
+  root `.editorconfig` disables `chain-method-continuation` for
+  `*.gradle.kts` (fights idiomatic version-catalog chains) and allows
+  PascalCase for `@Composable`-annotated functions.
 - Decided ADRs: ADR-001 through ADR-015 (see `docs/adr/`) — all ADRs
   are decided.
 
@@ -81,11 +90,11 @@ a change to the vision.
 ## Current Focus
 
 MVP tickets (milestone "MVP") exist as GitHub issues in
-`vgnpunk/mentalmatics`. Ticket #1 (module structure) is implemented on
-`feature/1-gradle-module-structure`, pending PR review. Remaining MVP
-tickets (#2–#20) are ready for assignment (see `docs/git-strategy.md`
-— tickets are assigned manually, the AI does not pick tickets on its
-own beyond what's been explicitly assigned).
+`vgnpunk/mentalmatics`. Tickets #1 (module structure) and #2 (CI
+pipeline) are merged into `main`. Remaining MVP tickets (#3–#20) are
+ready for assignment (see `docs/git-strategy.md` — tickets are
+assigned manually, the AI does not pick tickets on its own beyond
+what's been explicitly assigned).
 
 ## Important References
 
