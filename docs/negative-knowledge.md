@@ -109,3 +109,79 @@ didn't validate the actual interaction design; that needed real usage.
 
 **Context/ticket:** supersedes #11, #12 (as originally scoped) and
 #23 (closed, folded into #12's redesign).
+
+## 2026-09-03 (continued)
+
+**Tried/considered:** Adding `org.jetbrains.compose.material:material-icons-extended`
+pinned to the same version as the rest of Compose Multiplatform
+(`composeMultiplatform = "1.11.1"`), to replace the numeric keypad's
+text-glyph backspace/confirm icons ("⌫"/"✓") with real Material icons.
+
+**Result:** Fails dependency resolution —
+`Could not find org.jetbrains.compose.material:material-icons-extended:1.11.1`.
+This artifact (and its sibling `material-icons-core`, both under the
+legacy Material 2 `org.jetbrains.compose.material` group) is **not**
+published in lockstep with the main Compose Multiplatform version; it
+stops at `1.7.3` (last published 2024-12-19) on Maven Central,
+regardless of how new the rest of the CMP stack is. Fixed by pinning
+it to its own version (`composeMaterialIcons = "1.7.3"` in
+`gradle/libs.versions.toml`) independent of `composeMultiplatform`.
+Compiled and ran fine mixed with CMP 1.11.1/material3 1.11.0-alpha07 —
+the icon pack is just `ImageVector` data with a small, stable API
+surface, so the version skew hasn't caused problems in practice.
+Before bumping `composeMultiplatform` again, check
+`https://repo1.maven.org/maven2/org/jetbrains/compose/material/material-icons-extended/maven-metadata.xml`
+for whether a newer version now exists.
+
+**Context/ticket:** #12 (free-practice session UI) — keypad icon
+redesign.
+
+## 2026-09-03 (continued)
+
+**Tried/considered:** Sizing the session screen's top info block
+(progress/task/answer/retry-feedback text) with `wrap-content` height
+in a plain `Column`, with the numeric keypad placed directly below it.
+
+**Result:** In "Retry until correct" mode, the extra "Not quite, try
+again" line only appears after a wrong answer, growing the info
+block's height and pushing the entire keypad down — the confirm button
+visibly jumps to a new position after every wrong attempt, which is
+disorienting for rapid entry. Fixed by giving the info block and the
+keypad each a fixed `Modifier.weight(1f)` half of the screen (instead
+of content-based sizing), with the keypad bottom-aligned inside its
+half. This makes the keypad's position depend only on screen height,
+not on which optional child views are currently shown, and as a side
+effect puts it in the lower half of the screen for easier one-handed
+thumb reach.
+
+**Context/ticket:** #12 (free-practice session UI) — keypad
+stability/reachability fix.
+
+## 2026-09-03 (continued)
+
+**Tried/considered:** Sizing each keypad button with
+`Modifier.weight(1f).aspectRatio(1f)` inside its `Row` — width comes
+from dividing the row's available width three ways, height is then
+forced to match that width to keep the button square. This was fine
+when the keypad's container height was unconstrained, but after
+confining the keypad to the bottom half of the screen (previous
+entry), the 4 rows of width-derived square buttons together needed
+more height than that half actually had.
+
+**Result:** The container didn't shrink the buttons to fit; the last
+row got compressed against the one above it, so the "7/8/9" and
+"backspace/0/✓" rows visually overlapped — only reproducible on the
+device/emulator, not from reading the layout code. Fixed by measuring
+the actual available width *and* height with `BoxWithConstraints` and
+computing one explicit `buttonSize = minOf(width-derived size,
+height-derived size)` applied via `Modifier.size(...)`, dropping
+`weight`/`aspectRatio` entirely. Lesson: `aspectRatio` only guarantees
+the *shape* (square) from one known dimension — it does not check
+whether the derived other dimension actually fits the container. Any
+grid sized by aspect ratio from one axis needs its available space on
+the *other* axis checked too (`BoxWithConstraints`, or an explicit
+size computed from both dimensions) once that grid is placed somewhere
+with a bounded size on both axes.
+
+**Context/ticket:** #12 (free-practice session UI) — keypad overlap
+fix (found via user screenshot after the reachability change above).

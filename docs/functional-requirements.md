@@ -34,6 +34,16 @@ the numbers involved have, so that task complexity matches my level.
 > hands-on MVP testing — named levels hid what was actually being
 > controlled (number size) behind an extra layer of indirection.
 
+> Revision note (planned, not yet implemented): a single digit count
+> shared by all selected operations is not granular enough. Decided
+> to move to a per-operation-type "shape" instead — e.g. addition at
+> "2×2" (two 2-digit operands) while division is at "4×1" — selectable
+> from presets (1×1, 2×2, 3×3, 4×4, 1×2, 2×3, ...) plus a custom option
+> for arbitrary per-operand digit counts. The settings model should be
+> built so a future exercise area (scenarios, base conversion) can plug
+> in its own distinct per-type settings without reworking the setup
+> screen (see US-1.1's cross-cutting selection).
+
 ## 3. Real-Life Everyday Scenarios
 
 **US-3.1** As a user, I want to solve tasks based on realistic
@@ -82,14 +92,31 @@ can fit practice into the time I have.
 > considered later as a separate feature (see `docs/negative-knowledge.md`
 > for the discarded original ticket).
 
-**US-5.2** As a user, I want to solve tasks back-to-back without
-interruption during a session, and see a summary of my results only at
-the end, so that my practice rhythm isn't broken by feedback after
-every single task.
+> Revision note (planned, not yet implemented): a "hide timer" option
+> for duration-based sessions, so the countdown display itself can be
+> turned off for users who find it distracting, while duration still
+> governs when the session ends.
 
-- AC: No correct/incorrect indication is shown during the session.
-- AC: A report is shown at the end of the session listing the score
-  and every incorrect answer together with the correct solution.
+**US-5.2** As a user, I want to choose between solving tasks
+back-to-back without interruption (seeing a summary only at the end)
+and having a task only advance once I've answered it correctly, so
+that I can pick the practice rhythm that suits me.
+
+- AC: A "Report at the end" mode shows no correct/incorrect indication
+  during the session; a report at the end lists every task with the
+  user's answer, the correct answer, and correct/incorrect for each
+  (not just the incorrect ones).
+- AC: A "Retry until correct" mode shows immediate feedback on a wrong
+  answer (without revealing the correct answer) and keeps the same
+  task active, clearing the input, until answered correctly; only the
+  final (correct) attempt counts toward the session length and report.
+- AC: The mode is selected on the setup screen before the session
+  starts.
+
+> Revision note: originally specified as a single fixed behavior (no
+> feedback, report only at the end). After further hands-on feedback,
+> made configurable instead of replacing it outright, since some users
+> prefer immediate correction over a delayed report.
 
 **US-5.3** As a user, I want to enter my answer using an on-screen
 number pad instead of the system keyboard, so that entry is fast and
@@ -98,6 +125,18 @@ the screen doesn't get covered by the system keyboard popping up.
 - AC: Digits 0–9, a backspace action, and a confirm action are
   available on-screen.
 - AC: The system keyboard never appears for answer entry.
+- AC: The keypad's screen position stays fixed regardless of whether
+  feedback text (e.g. "Retry until correct" mode's error message) is
+  shown above it, and sits in the lower half of the screen for
+  comfortable one-handed thumb reach.
+
+> Revision note (planned, not yet implemented): a setting to choose
+> the digit-entry direction — appending each new digit to the right
+> (current behavior, e.g. pressing 0 then 1 shows "01") vs. treating
+> each new digit as the new ones-place and shifting existing digits
+> left (e.g. pressing 0 then 1 shows "10") — to support mental-math
+> techniques that compute a multi-digit result starting from the
+> ones-place column rather than the leading digit.
 
 ## 6. Progress Tracking
 
