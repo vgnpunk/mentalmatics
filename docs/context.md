@@ -75,13 +75,20 @@ milestones:
 
 - **MVP**: project setup, `TaskGenerator` foundation, **only** the
   "general mental math" exercise area (addition, subtraction,
-  multiplication, division), **free practice only** (no timed mode),
-  progress tracking (storage + toggle + display, without an explicit
-  delete function), the Tips & Tricks section, DE/EN language
-  switching.
+  multiplication, division), progress tracking (storage + toggle +
+  display, without an explicit delete function), the Tips & Tricks
+  section, DE/EN language switching.
 - **Post-MVP**: the everyday-scenarios and number-base exercise areas,
-  timed mode, the "delete progress data" action, store distribution
-  (Play Store, App Store, Obtainium, F-Droid).
+  the "delete progress data" action, store distribution (Play Store,
+  App Store, Obtainium, F-Droid).
+
+Note: the original MVP/post-MVP split separated "free practice" from
+a competitive "timed mode" (post-MVP). After hands-on testing, these
+were merged into one session concept — every session picks a length
+(task count or duration) and shows a report at the end, no separate
+"timed mode" ticket needed (see US-5.1/5.2 revision notes in
+`docs/functional-requirements.md` and `docs/negative-knowledge.md`).
+Ticket #23 (Timed Mode) was closed as a result.
 
 Note: `docs/vision.md` still describes all three exercise areas as the
 app's core value/USP — the MVP prioritization is a delivery order, not

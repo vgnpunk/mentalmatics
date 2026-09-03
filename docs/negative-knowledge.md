@@ -80,3 +80,32 @@ this project's CI.
 
 **Context/ticket:** #12 (free-practice session UI) — will matter again
 for #21/#22, whose routes will also need to carry operation selections.
+
+## 2026-09-03
+
+**Tried/considered:** Original design from ticket derivation:
+easy/medium/hard named difficulty levels (US-2.2, implemented in #11
+as a `Difficulty` enum), inline correct/incorrect feedback after every
+task (implemented in #12), system-keyboard text entry for answers
+(implemented in #12), and a separate competitive "timed mode" ticket
+(#23, solve as many tasks as possible against a clock, distinct from
+untimed free practice).
+
+**Result:** Discarded after the user hands-on tested the merged MVP
+screens and found the flow "weak": too many full-screen steps for a
+trivial amount of setup, a broken rhythm from tapping Check/Next after
+every single task, and system-keyboard popup interrupting entry.
+Replaced with: digit-count-based difficulty (US-2.2), a single
+combined setup screen, a custom on-screen number pad (US-5.3), no
+per-task feedback with a report at session end (US-5.2), and a session
+length chosen by task count *or* duration (US-5.1) — which subsumes
+what ticket #23 would have built, so #23 was closed rather than
+implemented separately.
+
+Lesson: none of this was catchable by code review, tests, or CI —
+it only became visible once a human actually used the running app.
+Ticket-by-ticket ADR-driven planning got the architecture right but
+didn't validate the actual interaction design; that needed real usage.
+
+**Context/ticket:** supersedes #11, #12 (as originally scoped) and
+#23 (closed, folded into #12's redesign).
