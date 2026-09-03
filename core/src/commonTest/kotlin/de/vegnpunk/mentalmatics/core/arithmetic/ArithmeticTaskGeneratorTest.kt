@@ -80,6 +80,22 @@ class ArithmeticTaskGeneratorTest {
     }
 
     @Test
+    fun `division stays correct and never overflows for a six-digit range`() {
+        // Regression test: a naive "pick dividend, retry" approach either overflows Int
+        // or nearly always exhausts its retry budget once the range spans this many digits.
+        val range = 100_000..999_999
+        val generator = generator(setOf(ArithmeticOperation.DIVISION), numberRange = range, operandCount = 2)
+
+        repeat(200) {
+            val task = generator.generate()
+            val (dividend, divisor) = task.operands
+            assertTrue(divisor != 0, "divisor was zero")
+            assertEquals(dividend / divisor, task.result)
+            assertEquals(dividend, task.result * divisor)
+        }
+    }
+
+    @Test
     fun `same seed produces the same sequence of tasks`() {
         val first = generator(ArithmeticOperation.entries.toSet(), seed = 7)
         val second = generator(ArithmeticOperation.entries.toSet(), seed = 7)
