@@ -19,14 +19,14 @@ fun MentalmaticsNavHost() {
         composable<Route.DifficultySelection> { backStackEntry ->
             val route: Route.DifficultySelection = backStackEntry.toRoute()
             DifficultySelectionScreen(
-                selectedOperations = route.selectedOperations,
+                selectedOperations = route.selectedOperations.toSet(),
                 onNavigate = { destination -> navController.navigate(destination) },
             )
         }
         composable<Route.Session> { backStackEntry ->
             val route: Route.Session = backStackEntry.toRoute()
             SessionScreen(
-                selectedOperations = route.selectedOperations,
+                selectedOperations = route.selectedOperations.toSet(),
                 selectedDifficulty = route.selectedDifficulty,
             )
         }

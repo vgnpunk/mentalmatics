@@ -77,6 +77,7 @@ class OperationSelectionViewModelTest {
             viewModel.onEvent(OperationSelectionEvent.Continue)
 
             val expected = ArithmeticOperation.entries.toSet() - ArithmeticOperation.DIVISION
-            assertEquals(Route.DifficultySelection(selectedOperations = expected), viewModel.navigationEffect.first())
+            val route = viewModel.navigationEffect.first() as Route.DifficultySelection
+            assertEquals(expected, route.selectedOperations.toSet())
         }
 }

@@ -42,7 +42,7 @@ class DifficultySelectionViewModel(
         viewModelScope.launch {
             _navigationEffect.send(
                 Route.Session(
-                    selectedOperations = selectedOperations,
+                    selectedOperations = selectedOperations.toList(),
                     selectedDifficulty = _uiState.value.selectedDifficulty,
                 ),
             )

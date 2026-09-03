@@ -54,7 +54,8 @@ class DifficultySelectionViewModelTest {
 
             viewModel.onEvent(DifficultySelectionEvent.Continue)
 
-            val expected = Route.Session(selectedOperations = someOperations, selectedDifficulty = Difficulty.HARD)
+            val expected =
+                Route.Session(selectedOperations = someOperations.toList(), selectedDifficulty = Difficulty.HARD)
             assertEquals(expected, viewModel.navigationEffect.first())
         }
 }
