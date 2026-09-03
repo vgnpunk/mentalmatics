@@ -42,7 +42,8 @@ class OperationSelectionViewModel : ViewModel() {
 
     private fun navigateToDifficultySelection() {
         viewModelScope.launch {
-            _navigationEffect.send(Route.DifficultySelection)
+            val route = Route.DifficultySelection(selectedOperations = _uiState.value.selectedOperations.toList())
+            _navigationEffect.send(route)
         }
     }
 }

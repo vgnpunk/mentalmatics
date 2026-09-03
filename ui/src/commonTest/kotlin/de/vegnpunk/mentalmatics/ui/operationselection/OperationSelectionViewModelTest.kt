@@ -69,12 +69,15 @@ class OperationSelectionViewModelTest {
     }
 
     @Test
-    fun `continue emits a navigation effect to difficulty selection`() =
+    fun `continue emits a navigation effect carrying the selected operations`() =
         runTest(testDispatcher) {
             val viewModel = OperationSelectionViewModel()
+            viewModel.onEvent(OperationSelectionEvent.ToggleOperation(ArithmeticOperation.DIVISION))
 
             viewModel.onEvent(OperationSelectionEvent.Continue)
 
-            assertEquals(Route.DifficultySelection, viewModel.navigationEffect.first())
+            val expected = ArithmeticOperation.entries.toSet() - ArithmeticOperation.DIVISION
+            val route = viewModel.navigationEffect.first() as Route.DifficultySelection
+            assertEquals(expected, route.selectedOperations.toSet())
         }
 }

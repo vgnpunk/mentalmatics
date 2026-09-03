@@ -49,3 +49,34 @@ changes against a clean build (`rm -rf */build build` first) rather
 than trusting an incremental run.
 
 **Context/ticket:** #2 (CI pipeline / ktlint setup).
+
+## 2026-09-03
+
+**Tried/considered:** Passing `Set<ArithmeticOperation>` directly as a
+`@Serializable` type-safe navigation route argument
+(`Route.DifficultySelection(val selectedOperations: Set<ArithmeticOperation>)`).
+Compiled fine and passed `ktlintCheck`/unit tests/CI, but crashed the
+app at startup: `IllegalArgumentException: Route ... could not find
+any NavType for argument selectedOperations of type
+kotlin.collections.LinkedHashSet`.
+
+**Result:** androidx.navigation's type-safe routes only have built-in
+`NavType` support for primitives, enums, and `List`/`Array` — verified
+directly against the `NavTypeConverter`/`RouteSerializer` source in
+androidx.navigation-common (`InternalType` has no `Set` case at all,
+only `LIST`/`ARRAY`/enum variants). **`Set` is never supported, with
+or without a custom `NavType`.** Fixed by keeping `Set<T>` as the
+domain/UI-facing type (ViewModel constructors, screen parameters) and
+converting to/from `List<T>` only at the two route-crossing points:
+where a view model constructs a `Route` (`.toList()`) and where
+`MentalmaticsNavHost` reads one back via `backStackEntry.toRoute()`
+(`.toSet()`).
+
+This class of bug is invisible to `ktlintCheck`/unit tests/`assembleDebug`
+— it only surfaces when the Compose UI actually composes and the
+`NavHost` builds its graph at runtime. Caught only by actually running
+the app on an emulator and navigating, not by any automated check in
+this project's CI.
+
+**Context/ticket:** #12 (free-practice session UI) — will matter again
+for #21/#22, whose routes will also need to carry operation selections.
