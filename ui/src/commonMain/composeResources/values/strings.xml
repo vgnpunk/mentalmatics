@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Mentalmatics</string>
+    <string name="exercise_area_general_mental_math">General Mental Math</string>
+    <string name="operation_addition">Addition</string>
+    <string name="operation_subtraction">Subtraction</string>
+    <string name="operation_multiplication">Multiplication</string>
+    <string name="operation_division">Division</string>
 </resources>
