@@ -5,12 +5,13 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ktlint)
 }
 
 kotlin {
     listOf(
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "Ui"
@@ -65,4 +66,13 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+// Compose Multiplatform generates resource-accessor Kotlin sources under
+// build/generated/ and registers them as regular source-set sources; ktlint
+// must not lint that generated code.
+ktlint {
+    filter {
+        exclude { entry -> entry.file.path.contains("/build/generated/") }
+    }
 }

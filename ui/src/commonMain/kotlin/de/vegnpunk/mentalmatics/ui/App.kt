@@ -13,9 +13,7 @@ import androidx.compose.ui.Modifier
 fun App() {
     MaterialTheme {
         Box(
-            modifier = Modifier
-                .safeContentPadding()
-                .fillMaxSize(),
+            modifier = Modifier.safeContentPadding().fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
             Text("Mentalmatics")

@@ -1,0 +1,9 @@
+root = true
+
+[*.{kt,kts}]
+ktlint_function_naming_ignore_when_annotated_with = Composable
+
+[*.gradle.kts]
+# Gradle version-catalog accessor chains (libs.versions.x.get().toInt())
+# read worse wrapped across lines than as a single expression.
+ktlint_standard_chain-method-continuation = disabled
