@@ -6,4 +6,6 @@ sealed interface OperationSelectionEvent {
     data class ToggleOperation(
         val operation: ArithmeticOperation,
     ) : OperationSelectionEvent
+
+    data object Continue : OperationSelectionEvent
 }

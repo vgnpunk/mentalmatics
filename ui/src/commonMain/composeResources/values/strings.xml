@@ -5,4 +5,9 @@
     <string name="operation_subtraction">Subtraction</string>
     <string name="operation_multiplication">Multiplication</string>
     <string name="operation_division">Division</string>
+    <string name="action_continue">Continue</string>
+    <string name="difficulty_title">Difficulty</string>
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_medium">Medium</string>
+    <string name="difficulty_hard">Hard</string>
 </resources>

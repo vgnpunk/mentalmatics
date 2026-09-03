@@ -1,11 +1,34 @@
 package de.vegnpunk.mentalmatics.ui.operationselection
 
 import de.vegnpunk.mentalmatics.core.arithmetic.ArithmeticOperation
+import de.vegnpunk.mentalmatics.ui.navigation.Route
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class OperationSelectionViewModelTest {
+    private val testDispatcher = StandardTestDispatcher()
+
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
     @Test
     fun `starts with every operation selected`() {
         val viewModel = OperationSelectionViewModel()
@@ -44,4 +67,14 @@ class OperationSelectionViewModelTest {
 
         assertEquals(setOf(lastOperation), viewModel.uiState.value.selectedOperations)
     }
+
+    @Test
+    fun `continue emits a navigation effect to difficulty selection`() =
+        runTest(testDispatcher) {
+            val viewModel = OperationSelectionViewModel()
+
+            viewModel.onEvent(OperationSelectionEvent.Continue)
+
+            assertEquals(Route.DifficultySelection, viewModel.navigationEffect.first())
+        }
 }
