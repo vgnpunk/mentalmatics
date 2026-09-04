@@ -185,3 +185,31 @@ with a bounded size on both axes.
 
 **Context/ticket:** #12 (free-practice session UI) — keypad overlap
 fix (found via user screenshot after the reachability change above).
+
+## 2026-09-04
+
+**Tried/considered:** Backtick-quoted `kotlin.test` function names
+containing a comma, e.g. `` fun `task count is complete once enough
+tasks are done, regardless of elapsed time`() ``. Compiles and runs
+fine on the JVM/Android host test target.
+
+**Result:** Fails only on Kotlin/Native targets —
+`compileTestKotlinIosSimulatorArm64` errors with `Name contains
+illegal characters: ","`. Kotlin/Native's name-mangling for backtick
+identifiers is stricter than the JVM's; commas (and likely other
+punctuation used for symbol-name delimiting) aren't allowed, even
+though the same identifier is legal Kotlin for JVM targets. This is
+invisible to `:core:testAndroidHostTest`/`:ui:testAndroidHostTest`
+(this project's only targets normally run without a Mac) and only
+surfaces in the CI `iOS build & test` job, or by explicitly running
+`compileTestKotlinIosSimulatorArm64` locally (which **can** be
+cross-compiled on Linux, unlike actually *running* the iOS simulator
+tests). Fixed by rephrasing the test names to avoid commas entirely.
+Before writing a new backtick test name, avoid commas (and prefer
+plain words/spaces generally) — or run
+`./gradlew :core:compileTestKotlinIosSimulatorArm64
+:ui:compileTestKotlinIosSimulatorArm64` locally before pushing, since
+this doesn't require macOS.
+
+**Context/ticket:** discovered via CI failure on PR #38 (ticket #37's
+redesign branch).
