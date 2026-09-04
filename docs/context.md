@@ -94,15 +94,16 @@ Note: `docs/vision.md` still describes all three exercise areas as the
 app's core value/USP — the MVP prioritization is a delivery order, not
 a change to the vision.
 
-Ticket #12's session redesign (see above) has gone through several
-hands-on-testing rounds. Implemented so far: dynamic color theming
-(US-8.3), digit-count selection (US-2.2), combined setup screen, a
-custom numeric keypad (US-5.3, now icon-based, fixed lower-half
-position), no-per-task-feedback sessions with an end-of-session report
-showing every entry (US-5.2), and a session feedback-mode setting
-(US-5.2: "report at the end" vs. "retry until correct").
+Ticket #12's session redesign (tracked under #37, closed — shipped via
+PR #38/#39) went through several hands-on-testing rounds. Implemented:
+dynamic color theming (US-8.3), digit-count selection (US-2.2),
+combined setup screen, a custom numeric keypad (US-5.3, now icon-based,
+fixed lower-half position), no-per-task-feedback sessions with an
+end-of-session report showing every entry (US-5.2), and a session
+feedback-mode setting (US-5.2: "report at the end" vs. "retry until
+correct").
 
-## Known Open UI/UX Feedback (Ticket #12 redesign)
+## Known Open UI/UX Feedback (Ticket #40, follow-up to #37)
 
 From hands-on testing, decided-but-not-yet-implemented items (see the
 matching "planned" revision notes in `docs/functional-requirements.md`
