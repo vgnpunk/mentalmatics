@@ -7,7 +7,7 @@ import kotlin.test.assertTrue
 
 class SessionLengthTest {
     @Test
-    fun `task count is complete once enough tasks are done, regardless of elapsed time`() {
+    fun `task count is complete once enough tasks are done regardless of elapsed time`() {
         val length = SessionLength.TaskCount(count = 10)
 
         assertFalse(length.isComplete(completedTaskCount = 9, elapsedSeconds = 999_999))
@@ -15,7 +15,7 @@ class SessionLengthTest {
     }
 
     @Test
-    fun `duration is complete once enough time has passed, regardless of task count`() {
+    fun `duration is complete once enough time has passed regardless of task count`() {
         val length = SessionLength.Duration(totalSeconds = 300)
 
         assertFalse(length.isComplete(completedTaskCount = 0, elapsedSeconds = 299))

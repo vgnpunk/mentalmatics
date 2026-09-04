@@ -52,7 +52,7 @@ class SessionViewModelTest {
     }
 
     @Test
-    fun `digit presses build up the answer, backspace removes the last digit`() {
+    fun `digit presses build up the answer and backspace removes the last digit`() {
         val viewModel = SessionViewModel(FakeTaskGenerator(mutableListOf(taskA)), SessionLength.TaskCount(3))
 
         viewModel.onEvent(SessionEvent.DigitPressed(1))
@@ -146,7 +146,7 @@ class SessionViewModelTest {
     }
 
     @Test
-    fun `a duration session finishes once time is up, even without answering`() =
+    fun `a duration session finishes once time is up even without answering`() =
         runTest(testDispatcher) {
             val viewModel = SessionViewModel(FakeTaskGenerator(mutableListOf(taskA)), SessionLength.Duration(3))
 
