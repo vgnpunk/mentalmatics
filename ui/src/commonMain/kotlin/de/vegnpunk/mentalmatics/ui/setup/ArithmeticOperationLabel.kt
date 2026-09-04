@@ -1,4 +1,4 @@
-package de.vegnpunk.mentalmatics.ui.operationselection
+package de.vegnpunk.mentalmatics.ui.setup
 
 import de.vegnpunk.mentalmatics.core.arithmetic.ArithmeticOperation
 import mentalmatics.ui.generated.resources.Res

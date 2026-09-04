@@ -1,17 +1,27 @@
 package de.vegnpunk.mentalmatics.ui.session
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import de.vegnpunk.mentalmatics.core.arithmetic.ArithmeticSessionReport
 import de.vegnpunk.mentalmatics.core.arithmetic.ArithmeticTask
+import de.vegnpunk.mentalmatics.core.arithmetic.ArithmeticTaskResult
+import de.vegnpunk.mentalmatics.core.generation.SessionFeedbackMode
+import de.vegnpunk.mentalmatics.core.generation.SessionLength
 import de.vegnpunk.mentalmatics.core.generation.TaskGenerator
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+private const val TICK_MILLIS = 1_000L
 
 /**
- * Free-practice session state (US-2.1/US-2.2/US-5.1 — free practice
- * only, no timer in the MVP), following the StateFlow/UiState/Event
- * pattern from ADR-010.
+ * Free-practice session state (US-2.1/US-2.2/US-5.1/US-5.2/US-5.3):
+ * no per-task feedback, answers are entered via an on-screen keypad,
+ * and the session ends — showing a report — once [SessionLength] is
+ * reached. Follows the StateFlow/UiState/Event pattern from ADR-010.
  *
  * Takes a [TaskGenerator] rather than constructing an
  * `ArithmeticTaskGenerator` itself (ADR-008: manual fakes over
@@ -19,30 +29,89 @@ import kotlinx.coroutines.flow.update
  */
 class SessionViewModel(
     private val taskGenerator: TaskGenerator<ArithmeticTask>,
+    private val sessionLength: SessionLength,
+    private val feedbackMode: SessionFeedbackMode = SessionFeedbackMode.REPORT_AT_END,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(SessionUiState(task = taskGenerator.generate()))
+    private val results = mutableListOf<ArithmeticTaskResult>()
+    private var elapsedSeconds = 0
+
+    private val _uiState = MutableStateFlow<SessionUiState>(initialState())
     val uiState: StateFlow<SessionUiState> = _uiState.asStateFlow()
 
+    init {
+        if (sessionLength is SessionLength.Duration) {
+            startTicking()
+        }
+    }
+
     fun onEvent(event: SessionEvent) {
+        val current = _uiState.value as? SessionUiState.InProgress ?: return
         when (event) {
-            is SessionEvent.AnswerChanged -> updateAnswer(event.answer)
-            SessionEvent.SubmitAnswer -> submitAnswer()
-            SessionEvent.NextTask -> nextTask()
+            is SessionEvent.DigitPressed -> updateAnswer(current, current.answerInput + event.digit)
+            SessionEvent.BackspacePressed -> updateAnswer(current, current.answerInput.dropLast(1))
+            SessionEvent.ConfirmPressed -> confirmAnswer(current)
         }
     }
 
-    private fun updateAnswer(answer: String) {
-        _uiState.update { it.copy(answerInput = answer) }
+    private fun initialState() =
+        SessionUiState.InProgress(
+            task = taskGenerator.generate(),
+            answerInput = "",
+            completedCount = 0,
+            sessionLength = sessionLength,
+            elapsedSeconds = 0,
+        )
+
+    private fun updateAnswer(
+        current: SessionUiState.InProgress,
+        newInput: String,
+    ) {
+        _uiState.value = current.copy(answerInput = newInput, lastAttemptIncorrect = false)
     }
 
-    private fun submitAnswer() {
-        _uiState.update { state ->
-            val isCorrect = state.answerInput.toIntOrNull() == state.task.result
-            state.copy(feedback = if (isCorrect) AnswerFeedback.CORRECT else AnswerFeedback.INCORRECT)
+    private fun confirmAnswer(current: SessionUiState.InProgress) {
+        if (current.answerInput.isEmpty()) return
+
+        val userAnswer = current.answerInput.toIntOrNull()
+        val isCorrect = userAnswer == current.task.result
+
+        if (!isCorrect && feedbackMode == SessionFeedbackMode.RETRY_UNTIL_CORRECT) {
+            _uiState.value = current.copy(answerInput = "", lastAttemptIncorrect = true)
+            return
+        }
+
+        results += ArithmeticTaskResult(current.task, userAnswer, isCorrect)
+
+        if (sessionLength.isComplete(results.size, elapsedSeconds)) {
+            finishSession()
+        } else {
+            _uiState.value =
+                current.copy(
+                    task = taskGenerator.generate(),
+                    answerInput = "",
+                    completedCount = results.size,
+                    lastAttemptIncorrect = false,
+                )
         }
     }
 
-    private fun nextTask() {
-        _uiState.update { SessionUiState(task = taskGenerator.generate()) }
+    private fun startTicking() {
+        viewModelScope.launch {
+            while (_uiState.value is SessionUiState.InProgress) {
+                delay(TICK_MILLIS)
+                elapsedSeconds++
+                if (sessionLength.isComplete(results.size, elapsedSeconds)) {
+                    finishSession()
+                } else {
+                    _uiState.update { state ->
+                        (state as? SessionUiState.InProgress)?.copy(elapsedSeconds = elapsedSeconds) ?: state
+                    }
+                }
+            }
+        }
+    }
+
+    private fun finishSession() {
+        _uiState.value = SessionUiState.Completed(ArithmeticSessionReport(results.toList()))
     }
 }

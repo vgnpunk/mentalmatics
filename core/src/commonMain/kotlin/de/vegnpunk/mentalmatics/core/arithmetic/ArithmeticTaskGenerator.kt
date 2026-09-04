@@ -10,13 +10,18 @@ import kotlin.random.Random
  * in [operationSelection], using [difficultyConfig] for number size and
  * operand count.
  *
- * Subtraction/division are built "from the result outward" (pick the
- * result and the trailing operands first, then derive the leading
- * operand) so a chain of any length ([DifficultyConfig.operandCount])
- * is non-negative / evenly divisible by construction, instead of
- * searching for a valid combination. The leading operand is resampled
- * up to [MAX_RANGE_ATTEMPTS] times if it falls outside
+ * Subtraction is built "from the result outward" (pick the result and
+ * the trailing operands first, then derive the leading operand) so a
+ * chain of any length ([DifficultyConfig.operandCount]) is
+ * non-negative by construction. The leading operand is resampled up to
+ * [MAX_RANGE_ATTEMPTS] times if it falls outside
  * [DifficultyConfig.numberRange].
+ *
+ * Division is built forward instead (small divisors chosen first, then
+ * a quotient within range, then the dividend derived from both) —
+ * picking a dividend first and retrying, like subtraction does, risks
+ * either overflow or near-guaranteed failure once the configured
+ * number range spans more than a couple of digits.
  */
 class ArithmeticTaskGenerator(
     private val operationSelection: OperationSelection<ArithmeticOperation>,
@@ -39,11 +44,7 @@ class ArithmeticTaskGenerator(
             ArithmeticOperation.SUBTRACTION ->
                 generateFromResult(trailingCount, ::randomOperand) { result, trailing -> result + trailing.sum() }
 
-            ArithmeticOperation.DIVISION ->
-                // Trailing operands are divisors at evaluation time, so they must never be zero.
-                generateFromResult(trailingCount, ::randomNonZeroOperand) { result, trailing ->
-                    result * trailing.fold(1) { acc, value -> acc * value }
-                }
+            ArithmeticOperation.DIVISION -> generateDivisionOperands(trailingCount)
         }
     }
 
@@ -64,17 +65,24 @@ class ArithmeticTaskGenerator(
         return listOf(leading) + trailing
     }
 
+    private fun generateDivisionOperands(trailingCount: Int): List<Int> {
+        val divisors = List(trailingCount) { randomDivisor() }
+        val divisorProduct = divisors.fold(1L) { acc, value -> acc * value }
+        val maxQuotient = difficultyConfig.numberRange.last / divisorProduct
+        val minQuotient = difficultyConfig.numberRange.first / divisorProduct
+        val quotient =
+            if (maxQuotient <= minQuotient) {
+                minQuotient
+            } else {
+                random.nextLong(minQuotient, maxQuotient + 1)
+            }
+        val dividend = (quotient * divisorProduct).toInt()
+        return listOf(dividend) + divisors
+    }
+
     private fun randomOperand(): Int = random.nextInt(difficultyConfig.numberRange.first, difficultyConfig.numberRange.last + 1)
 
-    private fun randomNonZeroOperand(): Int {
-        var value = randomOperand()
-        var attempts = 1
-        while (value == 0 && attempts < MAX_RANGE_ATTEMPTS) {
-            value = randomOperand()
-            attempts++
-        }
-        return value
-    }
+    private fun randomDivisor(): Int = random.nextInt(MIN_DIVISOR, MAX_DIVISOR + 1)
 
     private fun evaluate(
         operands: List<Int>,
@@ -89,5 +97,7 @@ class ArithmeticTaskGenerator(
 
     private companion object {
         const val MAX_RANGE_ATTEMPTS = 100
+        const val MIN_DIVISOR = 2
+        const val MAX_DIVISOR = 12
     }
 }

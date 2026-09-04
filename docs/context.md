@@ -75,17 +75,57 @@ milestones:
 
 - **MVP**: project setup, `TaskGenerator` foundation, **only** the
   "general mental math" exercise area (addition, subtraction,
-  multiplication, division), **free practice only** (no timed mode),
-  progress tracking (storage + toggle + display, without an explicit
-  delete function), the Tips & Tricks section, DE/EN language
-  switching.
+  multiplication, division), progress tracking (storage + toggle +
+  display, without an explicit delete function), the Tips & Tricks
+  section, DE/EN language switching.
 - **Post-MVP**: the everyday-scenarios and number-base exercise areas,
-  timed mode, the "delete progress data" action, store distribution
-  (Play Store, App Store, Obtainium, F-Droid).
+  the "delete progress data" action, store distribution (Play Store,
+  App Store, Obtainium, F-Droid).
+
+Note: the original MVP/post-MVP split separated "free practice" from
+a competitive "timed mode" (post-MVP). After hands-on testing, these
+were merged into one session concept — every session picks a length
+(task count or duration) and shows a report at the end, no separate
+"timed mode" ticket needed (see US-5.1/5.2 revision notes in
+`docs/functional-requirements.md` and `docs/negative-knowledge.md`).
+Ticket #23 (Timed Mode) was closed as a result.
 
 Note: `docs/vision.md` still describes all three exercise areas as the
 app's core value/USP — the MVP prioritization is a delivery order, not
 a change to the vision.
+
+Ticket #12's session redesign (see above) has gone through several
+hands-on-testing rounds. Implemented so far: dynamic color theming
+(US-8.3), digit-count selection (US-2.2), combined setup screen, a
+custom numeric keypad (US-5.3, now icon-based, fixed lower-half
+position), no-per-task-feedback sessions with an end-of-session report
+showing every entry (US-5.2), and a session feedback-mode setting
+(US-5.2: "report at the end" vs. "retry until correct").
+
+## Known Open UI/UX Feedback (Ticket #12 redesign)
+
+From hands-on testing, decided-but-not-yet-implemented items (see the
+matching "planned" revision notes in `docs/functional-requirements.md`
+for the first three):
+
+- Per-operation-type digit "shapes" (e.g. 1×1, 2×2, 4×8, custom)
+  instead of one global digit count (US-2.2 revision note).
+- "Hide timer" option for duration-based sessions (US-5.1 revision
+  note).
+- Digit-entry direction setting for the keypad — append right (current)
+  vs. shift-left-from-the-ones-place (US-5.3 revision note).
+- Settings architecture should stay generically extensible so future
+  exercise areas (scenarios, base conversion) can add their own
+  distinct per-type settings without reworking the setup screen.
+- End-of-session report's visual design for incorrect entries needs
+  another pass (no concrete direction yet, needs more user feedback).
+- The setup screen has accumulated a lot of stacked sections
+  (operations, digit count, session length, feedback mode, start) and
+  feels cluttered — may need grouping, progressive disclosure, or a
+  multi-step flow instead of one long screen.
+- The user has flagged that the overall setup → session → report flow
+  may be worth a holistic UX review rather than continuing to patch it
+  section by section.
 
 ## Current Focus
 
